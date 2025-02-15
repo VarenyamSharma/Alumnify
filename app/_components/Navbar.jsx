@@ -22,7 +22,7 @@ const Navbar = () => {
         <Link href="/" className="flex items-center gap-1">
           <GraduationCap size={30} />
           <p className="font-spaceGrotesk text-[21px] text-blue-600 font-bold">
-            AlumniConnect
+            Alumnify
           </p>
         </Link>
 
@@ -30,7 +30,7 @@ const Navbar = () => {
         <ul className="flex gap-6 text-gray-600">
           <li>
             <Link 
-              href="/home"
+              href="/"
               className={!isSignedIn ? "pointer-events-none opacity-50" : ""}
               onClick={handleUnauthorizedClick}
             >
@@ -48,7 +48,7 @@ const Navbar = () => {
           </li>
           <li>
             <Link 
-              href="/about"
+              href="/About"
               className={!isSignedIn ? "pointer-events-none opacity-50" : ""}
               onClick={handleUnauthorizedClick}
             >
@@ -57,11 +57,20 @@ const Navbar = () => {
           </li>
           <li>
             <Link 
-              href="/resources"
+              href="/Events"
               className={!isSignedIn ? "pointer-events-none opacity-50" : ""}
               onClick={handleUnauthorizedClick}
             >
-              Resources
+              Events 
+            </Link>
+          </li>
+          <li>
+            <Link 
+              href="/Profile"
+              className={!isSignedIn ? "pointer-events-none opacity-50" : ""}
+              onClick={handleUnauthorizedClick}
+            >
+              My Profile
             </Link>
           </li>
         </ul>

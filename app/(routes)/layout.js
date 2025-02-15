@@ -11,7 +11,7 @@ export default function Layout({ children }) {
   
         {/* Footer Section */}
         <footer className="p-4 bg-gray-800 text-white text-center">
-          <p>&copy; {new Date().getFullYear()} Aask Senior. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Alumnify. All rights reserved.</p>
         </footer>
       </div>
     );
