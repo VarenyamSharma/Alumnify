@@ -4,7 +4,14 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { GraduationCap, MapPin } from "lucide-react";
 import { debounce } from "lodash";
 
@@ -24,7 +31,9 @@ export default function FindAlumni() {
       try {
         const params = { search, ...filters, page };
         Object.keys(params).forEach((key) => {
-          if (!params[key]) delete params[key];
+          if (params[key] === "" || params[key] === null || params[key] === undefined) {
+            delete params[key];
+          }
         });
 
         const response = await axios.get("/api/admin/alumni", { params });
@@ -41,7 +50,9 @@ export default function FindAlumni() {
 
   useEffect(() => {
     fetchAlumni();
-    return () => fetchAlumni.cancel();
+    return () => {
+      if (fetchAlumni.cancel) fetchAlumni.cancel();
+    };
   }, [search, filters, page, fetchAlumni]);
 
   return (
@@ -139,8 +150,8 @@ export default function FindAlumni() {
             <PaginationItem>
               <PaginationPrevious
                 href="#"
-                onClick={() => page > 1 && setPage(page - 1)}
-                className={page === 1 ? "opacity-50 pointer-events-none" : ""}
+                onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                disabled={page === 1}
               />
             </PaginationItem>
 
@@ -159,10 +170,10 @@ export default function FindAlumni() {
               )
             )}
 
-            {/* Ellipsis if too many pages */}
-            {totalPages > 5 && (
+            {/* Ellipsis (Show only if too many pages) */}
+            {totalPages > 5 && page > 3 && page < totalPages - 2 && (
               <PaginationItem>
-                <PaginationEllipsis />
+                <span className="px-3">...</span>
               </PaginationItem>
             )}
 
@@ -170,10 +181,8 @@ export default function FindAlumni() {
             <PaginationItem>
               <PaginationNext
                 href="#"
-                onClick={() => page < totalPages && setPage(page + 1)}
-                className={
-                  page === totalPages ? "opacity-50 pointer-events-none" : ""
-                }
+                onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={page === totalPages}
               />
             </PaginationItem>
           </PaginationContent>
