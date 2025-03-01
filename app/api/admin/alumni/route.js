@@ -1,21 +1,24 @@
+// app/api/admin/alumni/route.js
 import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/utils/db";
+import Alumni from "@/models/Alumni";
 
-export async function GET(req) {
+export async function GET(request) {
   try {
-    const { db } = await connectToDatabase();
-    const url = req.nextUrl;
+    // Get the search parameters from the URL
+    const { searchParams } = new URL(request.url);
+    
+    // Extract query parameters with defaults
+    const search = searchParams.get("search") || "";
+    const industry = searchParams.get("industry") || "";
+    const batch = searchParams.get("batch") || "";
+    const location = searchParams.get("location") || "";
+    const page = Math.max(1, parseInt(searchParams.get("page"), 10) || 1);
+    const limit = 6; // Matches the frontend grid layout (2x3)
 
-    // Extract query parameters
-    const search = url.searchParams.get("search") || "";
-    const industry = url.searchParams.get("industry") || "";
-    const batch = url.searchParams.get("batch") || "";
-    const location = url.searchParams.get("location") || "";
-    const page = parseInt(url.searchParams.get("page"), 10) || 1;
-    const limit = 6;
-
-    // Construct the filter query
+    // Build the filter query
     const filter = {};
+
+    // Add search filter if search term exists
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: "i" } },
@@ -23,78 +26,70 @@ export async function GET(req) {
         { role: { $regex: search, $options: "i" } },
       ];
     }
+
+    // Add other filters if they exist
     if (industry) filter.industry = industry;
     if (batch) filter.batch = batch;
     if (location) filter.location = location;
 
-    // Fetch alumni and total count in parallel for better performance
-    const [alumni, totalAlumni] = await Promise.all([
-      db.collection("alumni")
-        .find(filter)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .toArray(),
-      db.collection("alumni").countDocuments(filter),
-    ]);
+    // Log the query for debugging
+    console.log("🔍 Query filters:", filter);
 
-    const totalPages = Math.ceil(totalAlumni / limit);
+    try {
+      // Execute the query and count in parallel
+      const [alumni, totalAlumni] = await Promise.all([
+        Alumni.find(filter)
+          .select('name email photoUrl role company batch location industry bio linkedIn createdAt')
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort({ createdAt: -1 }) // Sort by newest first
+          .lean(), // Convert to plain JS objects for better performance
+        Alumni.countDocuments(filter)
+      ]);
 
-    return NextResponse.json({ success: true, alumni, totalPages });
-  } catch (error) {
-    console.error("❌ Error fetching alumni:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
+      // Calculate total pages
+      const totalPages = Math.ceil(totalAlumni / limit);
 
-export async function POST(req) {
-  try {
-    const { db } = await connectToDatabase();
-    
-    // Check if the request is multipart/form-data
-    const contentType = req.headers.get("content-type") || "";
-    
-    let data;
-    if (contentType.includes("multipart/form-data")) {
-      // Handle form data with file upload
-      const formData = await req.formData();
-      data = Object.fromEntries(
-        Array.from(formData.entries()).map(([key, value]) => {
-          // Skip file for now, we'll handle it separately
-          if (key === "photo" && value instanceof File) {
-            return [key, null];
-          }
-          return [key, value];
-        })
-      );
-      
-      // Handle photo file if it exists
-      const photoFile = formData.get("photo");
-      if (photoFile && photoFile instanceof File) {
-        // Here you would typically:
-        // 1. Upload the file to a storage service (AWS S3, Cloudinary, etc.)
-        // 2. Get the URL and store it in the database
-        
-        // For now, we'll just store some metadata about the file
-        data.photoMeta = {
-          filename: photoFile.name,
-          type: photoFile.type,
-          size: photoFile.size
-        };
-        
-        // TODO: Implement actual file upload and get URL
-        // data.photoUrl = "URL from your file storage service";
-      }
-    } else {
-      // Handle JSON request
-      data = await req.json();
+      // Log the results for debugging
+      console.log(`📊 Found ${alumni.length} alumni (page ${page} of ${totalPages})`);
+
+      // Return the response in the exact format expected by the frontend
+      return NextResponse.json({
+        success: true,
+        alumni,
+        totalPages,
+        currentPage: page,
+        totalAlumni
+      });
+
+    } catch (queryError) {
+      console.error("Query execution error:", queryError);
+      throw queryError;
     }
 
-    // Insert the new alumni record
-    const result = await db.collection("alumni").insertOne(data);
-
-    return NextResponse.json({ success: true, result });
   } catch (error) {
-    console.error("❌ Error adding alumni:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error("API Error:", error);
+    
+    // Handle different types of errors
+    if (error.name === 'ValidationError') {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: "Invalid input data",
+          details: Object.values(error.errors).map(err => err.message)
+        },
+        { status: 400 }
+      );
+    }
+
+    // Generic error response
+    return NextResponse.json(
+      { 
+        success: false,
+        error: "Failed to fetch alumni",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
+      { status: 500 }
+    );
   }
 }
