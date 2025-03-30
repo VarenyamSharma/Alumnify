@@ -61,7 +61,7 @@ export default function Page() {
             </div>
 
             {/* Clerk SignIn Component */}
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Sign in to Aask Senior</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Sign in to Alumnify</h2>
             <SignIn />
           </div>
         </main>
