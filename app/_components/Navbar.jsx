@@ -27,7 +27,7 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex gap-6 text-gray-600">
-          {['/', '/findAlumni', '/About', '/Events', '/Profile'].map((path, index) => (
+          {['/', '/findAlumni', '/About', '/events', '/Profile'].map((path, index) => (
             <li key={index}>
               <Link 
                 href={path}
@@ -56,14 +56,14 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <button className="md:hidden z-[-1]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
         </button>
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
           <div className="absolute top-full left-0 w-full bg-white shadow-md md:hidden flex flex-col items-center py-4 gap-4">
-            {['/', '/findAlumni', '/About', '/Events', '/Profile'].map((path, index) => (
+            {['/', '/find Alumni', '/About', '/events', '/Profile'].map((path, index) => (
               <Link 
                 key={index} 
                 href={path} 

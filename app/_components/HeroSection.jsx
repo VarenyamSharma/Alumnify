@@ -10,8 +10,8 @@ const HeroSection = () => {
         <Image 
           src="/assets/hero image.jpg" 
           alt="Hero Background" 
-          layout="fill" 
-          objectFit="cover" 
+          fill
+          className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-blue-900 bg-opacity-50"></div>
@@ -23,7 +23,7 @@ const HeroSection = () => {
           Connect with Alumni Who <br /> Shape the Future
         </h1>
         <p className="mt-4 text-lg">
-          Build meaningful connections with graduates who’ve walked your path 
+          Build meaningful connections with graduates who've walked your path 
           and are ready to guide your journey.
         </p>
 
