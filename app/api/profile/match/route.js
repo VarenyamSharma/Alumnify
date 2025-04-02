@@ -6,6 +6,7 @@ import { auth } from '@clerk/nextjs/server';
 export async function GET(request) {
   try {
     const { userId } = auth();
+    
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

@@ -10,7 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-const Profile = () => {
+// import { useAuth } from '@clerk/nextjs';
+
+const Profile =  () => {
+//   const { getToken } = useAuth();
+// const token = await getToken();
+
+
+
   const { user } = useUser();
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -1,7 +1,9 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "../_components/Navbar";
 
 export default function Layout({ children }) {
     return (
+      <ClerkProvider>
       <div className="min-h-screen flex flex-col">
         {/* Header Section */}
         <Navbar />
@@ -14,6 +16,7 @@ export default function Layout({ children }) {
           <p>&copy; {new Date().getFullYear()} Alumnify. All rights reserved.</p>
         </footer>
       </div>
+    </ClerkProvider>
     );
   }
   
