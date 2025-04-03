@@ -1,42 +1,39 @@
-"use client"
+"use client";
 
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useUser, UserButton } from '@clerk/nextjs';
-import { GraduationCap, Menu, X } from 'lucide-react';
+import { GraduationCap, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 const Navbar = () => {
   const { isSignedIn } = useUser(); // Clerk authentication state
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleUnauthorizedClick = (event) => {
-    if (!isSignedIn) {
-      event.preventDefault();
-      alert("You need to sign in to access this page.");
-    }
-  };
-
   return (
     <header className="w-full border-b shadow-sm">
-      <nav className="flex justify-between items-center px-6 md:px-20 py-4 relative">
+      <nav className="flex justify-between items-center px-6 md:px-20 py-4">
         <Link href="/" className="flex items-center gap-1">
           <GraduationCap size={30} />
           <p className="font-spaceGrotesk text-[21px] text-blue-600 font-bold">Alumnify</p>
         </Link>
 
         {/* Desktop Navigation */}
-        <ul className="hidden md:flex gap-6 text-gray-600">
+        <ul className="hidden md:flex gap-6 text-gray-600  md:text-semibold">
           {['/', '/findAlumni', '/About', '/events', '/Profile'].map((path, index) => (
-            <li key={index}>
-              <Link 
-                href={path}
-                className={!isSignedIn ? "pointer-events-none opacity-50" : ""}
-                onClick={handleUnauthorizedClick}
-              >
-                {path === '/' ? 'Home' : path.replace('/', '')}
-              </Link>
-            </li>
+            isSignedIn ? (
+              <li key={index}>
+                <Link href={path}>{path === '/' ? 'Home' : path.replace('/', '')}</Link>
+              </li>
+            ) : null
           ))}
         </ul>
 
@@ -55,23 +52,27 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button className="md:hidden z-[-1]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
-        </button>
-
-        {/* Mobile Navigation Menu */}
-        {isMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-md md:hidden flex flex-col items-center py-4 gap-4">
-            {['/', '/find Alumni', '/About', '/events', '/Profile'].map((path, index) => (
-              <Link 
-                key={index} 
-                href={path} 
-                className={!isSignedIn ? "pointer-events-none opacity-50" : ""} 
-                onClick={handleUnauthorizedClick}
-              >
-                {path === '/' ? 'Home' : path.replace('/', '')}
-              </Link>
+        {/* Mobile Menu */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <button className="md:hidden">
+              <Menu size={30} />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="left" className="flex flex-col items-center py-6 gap-4">
+            <SheetHeader>
+              <SheetTitle className="text-2xl text-blue-600 font-bold">Alumnify</SheetTitle>
+              {/* <SheetDescription>
+                This action cannot be undone. This will permanently delete your account
+                and remove your data from our servers.
+              </SheetDescription> */}
+            </SheetHeader>
+            {['/', '/findAlumni', '/About', '/events', '/Profile'].map((path, index) => (
+              isSignedIn ? (
+                <Link key={index} href={path} onClick={() => setIsMenuOpen(false)}>
+                  {path === '/' ? 'Home' : path.replace('/', '')}
+                </Link>
+              ) : null
             ))}
             <div className="flex flex-col gap-2">
               {isSignedIn ? (
@@ -87,8 +88,8 @@ const Navbar = () => {
                 </>
               )}
             </div>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
       </nav>
     </header>
   );

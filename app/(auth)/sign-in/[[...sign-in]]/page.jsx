@@ -33,7 +33,7 @@ export default function Page() {
             </h2>
 
             <p className="mt-4 leading-relaxed text-white/90">
-              Aask Senior helps students connect with alumni from their college
+              ALumnify helps students connect with alumni from their college
               who are working in different fields. Get career guidance, industry
               insights, and mentorship based on your interests.
             </p>

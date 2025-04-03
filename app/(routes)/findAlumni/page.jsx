@@ -24,6 +24,15 @@ export default function FindAlumni() {
   const [loading, setLoading] = useState(false);
   const itemsPerPage = 6;
 
+  const handleConnect = (alum) => {
+    const email = alum.email; // Ensure the email is part of the alumni data
+    const subject = encodeURIComponent("Connection Request");
+    const body = encodeURIComponent(`Hi ${alum.name},\n\nI would like to connect with you.`);
+    const mailtoLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+
+    window.open(mailtoLink, '_blank');
+  };
+
   const fetchAlumni = useCallback(
     debounce(async () => {
       try {
@@ -129,10 +138,8 @@ export default function FindAlumni() {
                   />
                   <Button 
                     className="text-white bg-blue-500 font-semibold hover:bg-blue-600 w-48"
-                    onClick={() => {
-                      // Handle connection request
-                      console.log('Connecting with:', alum.name);
-                    }}
+                    onClick={() => handleConnect(alum)}
+                    
                   >
                     Connect
                   </Button>

@@ -10,7 +10,7 @@ const Footer = () => {
         {/* Left Section: Logo & Description */}
         <div className="max-w-sm">
           <h1 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
-            🎓 AlumniConnect
+            🎓 Alumnify
           </h1>
           <p className="mt-2 text-gray-400">
             Connecting students with alumni for better career opportunities.
@@ -59,7 +59,7 @@ const Footer = () => {
       <hr className="border-gray-700 my-6 mx-6" />
 
       {/* Copyright */}
-      <p className="text-center text-gray-400 text-sm">© 2025 AlumniConnect. All rights reserved.</p>
+      <p className="text-center text-gray-400 text-sm">© 2025 Alumnify. All rights reserved.</p>
     </footer>
   );
 };
